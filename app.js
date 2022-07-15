@@ -7,9 +7,14 @@ const cors = require('cors')
 const xss = require('xss-clean')
 const rateLimit = require('express-rate-limit')
 
-
+// connectDB
 const connectDB = require('./db/connect')
-const notFound = require('./middleware/not-found')
+
+// routers
+const authRouter = require('./routes/auth')
+const authorRouter = require('./routes/authors')
+const bookRouter = require('./routes/books')
+const notFoundMiddleware = require('./middleware/not-found')
 const errorHandlerMiddleware = require('./middleware/error')
 require('dotenv').config()
 
@@ -28,9 +33,15 @@ app.use(xss())
 
 
 // routes
-app.get('/', (req, res)=>{
+app.get('/hello', (req, res)=>{
 	res.send('Server is Running!')
 })
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/authors', authorRouter);
+app.use('/api/v1/books', bookRouter);
+
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 3000
 const host = "localhost"
