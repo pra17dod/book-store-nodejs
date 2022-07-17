@@ -1,43 +1,41 @@
 const Author = require('../models/Author')
-const asyncWrapper = require('../middleware/async')
-const {createCustomError} = require('../errors/custom-error')
+const { NotFoundError } = require('../errors')
+const { StatusCodes } = require('http-status-codes')
 
-const getAllAuthors = asyncWrapper(async (req, res) => {
-        const authors = await Author.find({})
-        res.status(201).json({authors})
-})
+const getAllAuthors = async (req, res) => {
+    const authors = await Author.find({})
+    res.status(StatusCodes.OK).json({authors})
+}
 
-const getAuthor = asyncWrapper (async (req, res, next) => {
-        const {id: authorID} = req.params
-        const author = await Author.findOne({ _id : authorID })
-        if (!author) {
-            return next(createCustomError(`No Author with id: ${authorID}`, 404))
-            // return res.status(404).json({ msg: `No Author with id: ${authorID}`}
-        }
-        res.status(201).json({author})
-})
+const getAuthor = async (req, res, next) => {
+    const authorId = req.user.userId;
+    const obj = await Author.findById({ _id : authorId })
+    if (!obj) {
+        console.log(Boolean(obj))
+        return new NotFoundError(`No Author with id: ${authorId}`)
+    }
+    console.log(authorId)
+    res.status(StatusCodes.OK).json({obj})
+}
 
-const updateAuthor = asyncWrapper (async (req, res) => {
-        const {id: authorID} = req.params
-        const author = await Author.findOneAndUpdate({_id: authorID}, req.body, {
-            new:true, 
-            runValidators: true,
-        })
-        if (!author) {
-            return next(createCustomError(`No Author with id: ${authorID}`, 404))
-        }
-        res.status(200).json({author})
-})
+const updateAuthor = async (req, res) => {
+    const authorId = req.user.userId;
 
-const deleteAuthor = asyncWrapper (async (req, res) => {
-        const {id: authorID} = req.params
-        const author = await Author.findOneAndDelete({ _id : authorID});
-        if (!author){
-            return next(createCustomError(`No Author with id: ${authorID}`, 404))
-        }
-    //    res.status(200).json({author})
-        res.status(200).json({author:null , status: 'success',})
-})
+    const author = await Author.findByIdAndUpdate({_id: authorId}, req.body, {
+        new:true,
+        runValidators: true,
+    })
+    res.status(StatusCodes.OK).json({author})
+}
+
+const deleteAuthor = async (req, res) => {
+    const authorId = req.user.userId;
+    const author = await Author.findByIdAndRemove({ _id : authorId});
+    if (!author){
+        return new NotFoundError(`No Author with id: ${authorId}`)
+    }
+    res.status(StatusCodes.OK).json({author:null , status: 'success',})
+}
 
 
 

@@ -27,6 +27,7 @@ const authorSchema = mongoose.Schema({
         required: [true, 'Please provide password'],
         minLength: 6,
         maxLength: 12,
+        // select: false,
     },
     
 

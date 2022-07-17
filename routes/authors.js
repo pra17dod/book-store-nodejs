@@ -8,6 +8,6 @@ const { getAllAuthors,
     } = require('../controllers/authors')
 
 router.route('/').get(getAllAuthors)
-router.route('/:id').get(getAuthor).patch(updateAuthor).delete(deleteAuthor)
+router.route('/me').get(getAuthor).patch(updateAuthor).delete(deleteAuthor)
 
 module.exports = router

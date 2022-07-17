@@ -1,50 +1,47 @@
 const Book = require('../models/Book')
-const asyncWrapper = require('../middleware/async')
-const {createCustomError} = require('../errors/custom-error')
+const { NotFoundError } = require('../errors')
+const { StatusCodes } = require('http-status-codes')
 
-const getAllBooks = asyncWrapper(async (req, res) => {
+
+const getAllBooks = async (req, res) => {
         const books = await Book.find({})
-        res.status(201).json({books})
-})
+        res.status(StatusCodes.OK).json({books})
+}
 
-const createBook = asyncWrapper (async (req, res) => {
+const createBook = async (req, res) => {
         const book = await Book.create(req.body)
-        res.status(201).json({book})
-})
+        res.status(StatusCodes.CREATED).json({book})
+}
 
-const getBook = asyncWrapper (async (req, res, next) => {
+const getBook = async (req, res, next) => {
         const {id: bookID} = req.params
         const book = await Book.findOne({ _id : bookID })
         if (!book) {
-            return next(createCustomError(`No Book with id: ${bookID}`, 404))
-            // return res.status(404).json({ msg: `No Book with id: ${bookID}`}
+            return new NotFoundError(`No Book with id: ${bookID}`)
         }
-        res.status(201).json({book})
-})
+        res.status(StatusCodes.OK).json({book})
+}
 
-const updateBook = asyncWrapper (async (req, res) => {
+const updateBook = async (req, res) => {
         const {id: bookID} = req.params
         const book = await Book.findOneAndUpdate({_id: bookID}, req.body, {
-            new:true, 
+            new:true,
             runValidators: true,
         })
         if (!book) {
-            return next(createCustomError(`No Book with id: ${bookID}`, 404))
+            return new NotFoundError(`No Book with id: ${bookID}`)
         }
-        res.status(200).json({Book})
-})
+        res.status(StatusCodes.OK).json({Book})
+}
 
-const deleteBook = asyncWrapper (async (req, res) => {
+const deleteBook = async (req, res) => {
         const {id: bookID} = req.params
         const book = await Book.findOneAndDelete({ _id : bookID});
         if (!book){
-            return next(createCustomError(`No Book with id: ${bookID}`, 404))
+            return new NotFoundError(`No Book with id: ${bookID}`)
         }
-    //    res.status(200).json({book})
-        res.status(200).json({book:null , status: 'success',})
-})
-
-
+        res.status(StatusCodes.OK).json({book:null , status: 'success'})
+}
 
 
 module.exports = {
