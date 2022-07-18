@@ -5,11 +5,13 @@ const bookSchema = new mongoose.Schema({
         required: true
     },
     author: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Author"
-        },
-        name: String
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    like: {
+        type: Array,
+        of: mongoose.Schema.Types.ObjectId,
+        required: false,
     }
 });
 

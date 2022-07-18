@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 
@@ -21,7 +22,6 @@ const authRouter = require('./routes/auth')
 const authorRouter = require('./routes/authors')
 const bookRouter = require('./routes/books')
 
-require('dotenv').config()
 // app.set('trust proxy', 1)
 app.use(rateLimit ({
     windowsMs: 15*60*1000, // 15 minutes

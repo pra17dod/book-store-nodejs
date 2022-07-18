@@ -4,13 +4,15 @@
   "description": "Book Store Backend",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node seeder.js && node app.js",
+    "dev": "node seeder.js && nodemon app.js"
   },
   "author": "Prashant Dodiya",
   "license": "MIT",
   "devDependencies": {
-    "nodemon": "^2.0.19"
+    "@faker-js/faker": "^7.3.0",
+    "nodemon": "^2.0.19",
+    "timers": "^0.1.1"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

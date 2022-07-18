@@ -18,19 +18,20 @@ const authorSchema = mongoose.Schema({
           ],
         unique: true,
     },
-    phoneNumber:{
-        type: Number,
+    phone:{
+        type: String,
         required: true,
     },
     password:{
         type: String,
         required: [true, 'Please provide password'],
-        minLength: 6,
-        maxLength: 12,
+        minLength: 8,
         // select: false,
     },
-    
-
+    books: {
+        type: Array,
+        of: mongoose.Schema.Types.ObjectId
+    }
 });
 
 authorSchema.pre('save', async function () {
