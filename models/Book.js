@@ -8,11 +8,17 @@ const bookSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    like: {
+    likeBy: {
         type: Array,
         of: mongoose.Schema.Types.ObjectId,
         required: false,
+    },
+    likes: {
+        type: Number,
+        required: false,
     }
+
 });
+
 
 module.exports = mongoose.model("Book", bookSchema);

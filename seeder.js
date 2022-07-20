@@ -141,7 +141,7 @@ async function generateBooks () {
             }
 
             const book = new Book({
-                title: _title,
+                title: _title.slice(0, -1),
                 author: author._id,
                 like: []
             });
@@ -149,7 +149,7 @@ async function generateBooks () {
             await book.save()
                 .then(bookRef => {
                     bookId.push(bookRef._id);
-                    console.log(`${author.name} is the author of Book: "${bookRef.title.slice(0, -1)}"`);
+                    console.log(`${author.name} is the author of Book: "${bookRef.title}"`);
                 })
                 .catch(err => console.log(err))
         }
@@ -173,20 +173,21 @@ async function generateBooks () {
 async function generateLikes () {
     const authors = await Author.find({});
     const books = await Book.find({});
-    var list = [];
+    var list = []
     authors.forEach(
         author => { list.push(author._id); }
     )
     await Promise.all( books.map( async(book) => {
-            let data = [];
+            let data = new Set()
             // adding author id random times
             for (let j = 0; j < Math.floor(Math.random() * list.length) + 1; j++) {
                 // choosing random author id
                 let val = list[Math.floor(Math.random() * list.length) + 1]
                 if (val != undefined)
-                    data.push(val);
+                    data.add(val)
             }
-            book.like = data;
+            book.likeBy = [...data]
+            book.likes = book.likeBy.length
             await book.save()
             .then(
                 console.log(`People liked Book: ${book.title}`)
@@ -203,12 +204,19 @@ async function generateLikes () {
  */
 
 async function main() {
+    // To reset Database
     await resetDb(process.env.MONGO_ADMIN_URI);
-    await connectDb(process.env.MONGO_ADMIN_URI);
+    await disconnectDb();
+
+    // Populating the Database
+    await connectDb(process.env.MONGO_URI);
     await generateAuthors(10);
     await generateBooks();
     await generateLikes();
+
+    // Adding Authors' details to local file
     await createJSON();
+
     await disconnectDb();
 }
 
